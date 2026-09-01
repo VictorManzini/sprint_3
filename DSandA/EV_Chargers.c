@@ -5,6 +5,13 @@
 #include <time.h>
 #define MAX_SESSOES 100
 #define LIMITE_POTENCIA_TOTAL 50.0 
+// Definidas as cores para os prints
+#define RED "\033[1;31m"
+#define GREEN "\033[1;32m"
+#define YELLOW "\033[1;33m"
+#define BLUE "\033[1;34m"
+#define ORANGE "\033[38;5;208m"
+#define RESET "\033[0m"
 
 typedef struct{
     char placa[8];
@@ -48,6 +55,7 @@ float determinarTarifa(struct tm dataInicio, int tipo_carga){
     }
 
     if(tipo_carga == 1) tarifa *= 1.3;
+    return tarifa;
 }
 
 int iniciarSessao(Sessao sessoes[], int total){
@@ -55,7 +63,6 @@ int iniciarSessao(Sessao sessoes[], int total){
     int confirma_placa;
     int confirma_modelo;
     int opcao_bateria;
-    int confirma_bateria;
     int confirma_potencia_bateria;
 
     if (total >= MAX_SESSOES){
@@ -66,6 +73,7 @@ int iniciarSessao(Sessao sessoes[], int total){
     // Criando o ID da sessao
     sessoes[total].id = total + 1;
     printf("ID da sessao: %d\n", sessoes[total].id);
+    printf("Por favor, guarde o ID da sua sessao, ele sera necessario para finalizar a sessao e realizar o pagamento\n");
     // Registrando o nome do cliente
     do{
         printf("Por favor digite o seu nome e sobrenome: ");
@@ -163,7 +171,7 @@ int iniciarSessao(Sessao sessoes[], int total){
         printf("Resposta: ");
         scanf("%d", &sessoes[total].tipo_carga);
         printf("\n");
-        if(sessoes[total].tipo_carga > 1 && sessoes[total].tipo_carga < 2){
+        if(sessoes[total].tipo_carga != 1 && sessoes[total].tipo_carga != 2){
             printf("Tipo de carga selecionada incorreta... tente novamente\n");
         }
         else if(sessoes[total].tipo_carga == 2){
@@ -186,15 +194,89 @@ int iniciarSessao(Sessao sessoes[], int total){
     return total + 1;
 }
 
-void finalizarSessao(Sessao sessoes[], int total){
+void redistribuirPotencia(Sessao sessoes[], int total){
+    int ativas = 0; 
+    // Contagem do numero de sessoes ativas
+    for(int i = 0; i < total; i++){
+        if(sessoes[i].status == 0){
+            ativas +=1;
+        } 
+    }
+    if(ativas == 0){
+        printf("Nenhuma sessao ativa no momento... \n");
+        return;
+    }
 
+    float potencia_por_sessao = LIMITE_POTENCIA_TOTAL / ativas;
+
+    //Redistribuindo a potencia pela quantidade de sessoes ativas
+    for(int i = 0; i < total; i++){
+        if(sessoes[i].status == 0){
+            sessoes[i].potencia_atual = potencia_por_sessao;
+        }
+    }
+}
+
+void finalizarSessao(Sessao sessoes[], int total){
+    int id;
+    printf("Por favor digite o ID da sessao que deseja finalizar: ");
+    scanf("%d", &id);
+    printf("\n");
+
+    int idx = -1; 
+    for(int i = 0; i < total; i++){
+        if(sessoes[i].id == id){
+            idx = i;
+            break;
+        }
+    }
+    if(idx == -1){
+        printf("Sessao ID %d nao encontrada\n", id);
+        return;
+    }
+    // Calculando o custo
+    sessoes[idx].hora_fim = time(NULL);
+    float horas = difftime(sessoes[idx].hora_fim, sessoes[idx].hora_inicio) / 3600.0;
+    sessoes[idx].energia = horas * sessoes[idx].potencia_atual;
+    printf(ORANGE"Energia consumida pela sessao ID %d: %fkW\n"RESET, sessoes[idx].id, sessoes[idx].energia);
+    sessoes[idx].custo = sessoes[idx].energia * sessoes[idx].tarifa_kWh;
+    printf(ORANGE"Valor a pagar da sessao ID %d: R$%.2f\n"RESET, sessoes[idx].id, sessoes[idx].custo);
+    sessoes[idx].status = 1;
+    printf(YELLOW"SESSAO ID %d FINALIZADA\n"RESET, sessoes[idx].id);
+    redistribuirPotencia(sessoes, total);
 }
 
 void listarSessoes(Sessao sessoes[], int total){
+    int ativas = 0;
+    for(int i = 0; i < total; i++){
+        if(sessoes[i].status == 0){
+            ativas += 1;
+        }
+    }
+    if(ativas == 0){
+        printf(YELLOW"Nenhuma sessao ativa no momento\n"RESET);
+        return;
+    }
+    else{
+        printf(BLUE"Quantidade de sessoes ativas: %d\n"RESET, ativas);
+    
+        for(int i = 0; i < total; i++){
+            if(sessoes[i].status == 0){
+                printf("ID: %d | Status: %d\n", sessoes[i].id, sessoes[i].status);
+                printf("Nome do usuario da sessao ID %d: %s\n", sessoes[i].id, sessoes[i].nome);
+                printf("Placa do carro da sessao ID %d: %s\n", sessoes[i].id, sessoes[i].carro.placa);
+
+                float horas_atuais = difftime(time(NULL), sessoes[i].hora_inicio) / 3600.0;
+                float energia_atual = horas_atuais * sessoes[i].potencia_atual;
+                float custo_atual = energia_atual * sessoes[i].tarifa_kWh;
+                printf(ORANGE"Energia consumida ate o momento: %.2fkW | Custo ate o momento: R$%.2f\n"RESET, energia_atual, custo_atual);
+            }
+        }
+    }
 
 }
 
-int buscarSessaoPorId(Sessao sessoes[], int tltal, int id){
+int buscarSessaoPorId(Sessao sessoes[], int total, int id){
 
 }
 
@@ -212,6 +294,11 @@ int main(){
     int opcao;
 
     do{
+        switch(opcao){
+            case 1: 
+            printf("Opcao 1, iniciar sessao, selecionada\n");
+            //iniciarSessao();
+        }
 
     }while (opcao != 0);
     return 0;
