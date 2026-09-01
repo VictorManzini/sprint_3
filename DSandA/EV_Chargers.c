@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <time.h>
 #define MAX_SESSOES 100
+#define LIMITE_POTENCIA_TOTAL 50.0 
 
 typedef struct{
     char placa[8];
@@ -20,6 +21,7 @@ typedef struct{
     time_t hora_fim;
     float custo;
     float tarifa_kWh;
+    float potencia_atual;
     int tipo_carga; // 1 = recarga rapida | 2 = recarga lenta
     int status; // 0 = sessao em andamento | 1 = concluida
 }Sessao; 
@@ -126,8 +128,9 @@ int iniciarSessao(Sessao sessoes[], int total){
         printf("Resposta: ");
         scanf("%d", &opcao_bateria);
         printf("\n");
-        if(opcao_bateria != 1 || opcao_bateria != 2){
+        if(opcao_bateria != 1 && opcao_bateria != 2){
             printf("Opcao invalida... tente novamente\n");
+            
         }
         else if(opcao_bateria == 2){
             sessoes[total].carro.potencia_bateria = 38.8; // 38.8 kWh
@@ -145,14 +148,14 @@ int iniciarSessao(Sessao sessoes[], int total){
                 if(confirma_potencia_bateria < 1 || confirma_potencia_bateria > 2){
                     printf("Opcao invalida... tente novamente\n");
                 }
-                else if(confirma_bateria == 2){
+                else if(confirma_potencia_bateria == 2){
                     printf("Sem problemas, vamos voltar essa etapa\n");
                 }
             }while(confirma_potencia_bateria != 1);
             confirma_potencia_bateria = 1;
 
         }
-    }while(confirma_bateria !=1);
+    }while(opcao_bateria !=1 && opcao_bateria !=2);
  
     // Pega qual o tipo de recarga que o usuário deseja
     do{
@@ -160,7 +163,7 @@ int iniciarSessao(Sessao sessoes[], int total){
         printf("Resposta: ");
         scanf("%d", &sessoes[total].tipo_carga);
         printf("\n");
-        if(sessoes[total].tipo_carga > 1 || sessoes[total].tipo_carga < 2){
+        if(sessoes[total].tipo_carga > 1 && sessoes[total].tipo_carga < 2){
             printf("Tipo de carga selecionada incorreta... tente novamente\n");
         }
         else if(sessoes[total].tipo_carga == 2){
@@ -169,7 +172,7 @@ int iniciarSessao(Sessao sessoes[], int total){
         else{
             printf("Carga Rapida selecionada\n");
         }
-    }while(sessoes[total].tipo_carga != 1 || sessoes[total].tipo_carga != 2);
+    }while(sessoes[total].tipo_carga != 1 && sessoes[total].tipo_carga != 2);
 
     // Pega o horario de inicio da sessao
     sessoes[total].hora_inicio = time(NULL);
