@@ -277,11 +277,96 @@ void listarSessoes(Sessao sessoes[], int total){
 }
 
 int buscarSessaoPorId(Sessao sessoes[], int total, int id){
-
+    for(int i = 0; i < total; i++){
+        if(sessoes[i].id == id){
+            return i;
+        }
+    }
+    return -1;
 }
 
 void ordenarSessoes(Sessao sessoes[], int total){
 
+    int opcao_ordenar = 0;
+    printf("Selecione como deseja ordenar as sessoes: \n");
+    printf("1 - ID\n");
+    printf("2 - Energia Consumida\n");
+    printf("3 - Custo\n");
+    printf("4 - Duracao\n");
+    printf("Digite a sua escolha: ");
+    scanf("%d", &opcao_ordenar);
+    printf("\n");
+
+    switch(opcao_ordenar){
+
+        case 1: 
+        printf(GREEN"Ordenacao por ID selecionada\n"RESET);
+        for(int i = 0; i < total -1; i++){
+            for(int j = 0; j < total -1; j++){
+                if(sessoes[j].id > sessoes[j+1].id){
+                    Sessao temp = sessoes[j];
+                    sessoes[j] = sessoes[j+1];
+                    sessoes[j+1] = temp;
+                }
+            }
+        }
+        break;
+
+        case 2: 
+        printf(GREEN"Ordenacao por energia consumida selecionada\n"RESET);
+        for(int i = 0; i < total -1; i++){
+            for(int j = 0; j < total -1; j++){
+                if(sessoes[j].energia > sessoes[j+1].energia){
+                    Sessao temp = sessoes[j];
+                    sessoes[j] = sessoes[j+1];
+                    sessoes[j+1] = temp;
+                }
+            }
+        }
+        break;
+
+        case 3: 
+        printf(GREEN"Ordenacao por custo selecionada\n"RESET);
+        for(int i = 0; i < total -1; i++){
+            for(int j = 0; j < total -1; j++){
+                if(sessoes[j].custo > sessoes[j+1].custo){
+                    Sessao temp = sessoes[j];
+                    sessoes[j] = sessoes[j+1];
+                    sessoes[j+1] = temp;
+                }
+            }
+        }
+        break;
+
+        case 4:
+        printf(GREEN"Ordenacao por duracao selecionada\n"RESET);
+
+        for(int i = 0; i < total -1; i++){
+            for(int j = 0; j < total -1; i++){
+
+                float duracao_j;
+                if(sessoes[j].status == 0){
+                    duracao_j = difftime(time(NULL), sessoes[j].hora_inicio);
+
+                } else{
+                    duracao_j = difftime(sessoes[j].hora_fim, sessoes[j].hora_inicio);
+                }
+                float duracao_j1;
+                if(sessoes[j+1].status == 0){
+                    duracao_j1 = difftime(time(NULL), sessoes[j+1].hora_inicio);
+                } else{
+                    duracao_j1 = difftime(sessoes[j+1].hora_fim, sessoes[j+1].hora_inicio);
+                }
+
+                if(duracao_j > duracao_j1){
+                    Sessao temp = sessoes[j];
+                    sessoes[j] = sessoes[j+1];
+                    sessoes[j+1] = temp;
+                }
+            }
+        }
+        break;
+    }
 }
 
 void mostrarEstatisticas(Sessao sessoes[], int total){
