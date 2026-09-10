@@ -58,6 +58,11 @@ float determinarTarifa(struct tm dataInicio, int tipo_carga){
     return tarifa;
 }
 
+float calcularEnergiaAtual(Sessao sessoes){
+    float horas = difftime(time(NULL), sessoes.hora_inicio) / 3600.0;
+    return horas * sessoes.potencia_atual;
+}
+
 int iniciarSessao(Sessao sessoes[], int total){
     int confirma_nome;
     int confirma_placa;
@@ -316,10 +321,12 @@ void ordenarSessoes(Sessao sessoes[], int total){
         printf(GREEN"Ordenacao por energia consumida selecionada\n"RESET);
         for(int i = 0; i < total -1; i++){
             for(int j = 0; j < total -1; j++){
-                if(sessoes[j].energia > sessoes[j+1].energia){
-                    Sessao temp = sessoes[j];
-                    sessoes[j] = sessoes[j+1];
-                    sessoes[j+1] = temp;
+                float energia_j = calcularEnergiaAtual(sessoes[j]); 
+                float energia_j1 = calcularEnergiaAtual(sessoes[j+1]);
+                if(energia_j > energia_j1){
+                    Sessao temp = sessoes[j]; 
+                    sessoes[j] = sessoes[j+1]; 
+                    sessoes[j+1] = temp; 
                 }
             }
         }
@@ -329,11 +336,14 @@ void ordenarSessoes(Sessao sessoes[], int total){
         printf(GREEN"Ordenacao por custo selecionada\n"RESET);
         for(int i = 0; i < total -1; i++){
             for(int j = 0; j < total -1; j++){
-                if(sessoes[j].custo > sessoes[j+1].custo){
-                    Sessao temp = sessoes[j];
-                    sessoes[j] = sessoes[j+1];
-                    sessoes[j+1] = temp;
+                float custo_j = calcularEnergiaAtual(sessoes[j]) * sessoes[j].tarifa_kWh;
+                float custo_j1 = calcularEnergiaAtual(sessoes[j+1]) * sessoes[j+1].tarifa_kWh;
+                if(custo_j > custo_j1){
+                    Sessao temp = sessoes[j]; 
+                    sessoes[j] = sessoes[j+1]; 
+                    sessoes[j+1] = temp; 
                 }
+
             }
         }
         break;
@@ -370,39 +380,63 @@ void ordenarSessoes(Sessao sessoes[], int total){
 }
 
 void mostrarEstatisticas(Sessao sessoes[], int total){
-    int andamento = 0; 
-    int concluidas = 0; 
-    float total_faturamento = 0; 
-    float energia_utilizada = 0;
-
+    if(total == 0){
+        printf(YELLOW"Nenhuma sessao cadastrada ainda\n"RESET);
+        return;
+    }
+    float energia_utilizada = 0; 
+    float custo_total = 0;
+    int total_sessoes = 0; 
+    float maior_consumo = calcularEnergiaAtual(sessoes[0]); 
+    float menor_consumo = calcularEnergiaAtual(sessoes[0]);
     for(int i = 0; i < total; i++){
         if(sessoes[i].status == 0){
-            andamento += 1; 
-        }
-        else{
-            concluidas += 1; 
-            total_faturamento = total_faturamento + sessoes[i].custo;
-            energia_utilizada = energia_utilizada + sessoes[i].energia;
+            total_sessoes +=1;
+            float energia_i = calcularEnergiaAtual(sessoes[i]);
+            float custo_i = energia_i * sessoes[i].tarifa_kWh;
+            energia_utilizada += energia_i;
+            custo_total += custo_i;
+
+            if(energia_i > maior_consumo){
+                maior_consumo = energia_i;
+            }
+            if(energia_i < menor_consumo){
+                menor_consumo = energia_i;
+            }
         }
     }
-    printf("Total de sessoes em andamento: %d\n", andamento);
-    printf("Total de sessoes concluidas: %d\n", concluidas);
-    printf("Faturamento total das sessoes finalizadas: R$%.2f\n", total_faturamento);
-    printf("Energia total utilizada pelas sessoes concludidas: %.2fkWh\n", energia_utilizada);
+    float media_custo = custo_total / total_sessoes;
+    printf("Total de sessoes: %d\n", total_sessoes); 
+    printf("Energia total utilizada: %.2fkWh\n", energia_utilizada); 
+    printf("Custo total: R$%.2f\n", custo_total);
+    printf("Custo medio das recargas: R$%.2f\n", media_custo); 
+    printf("Maior consumo de energia: %.2fkW\n", maior_consumo); 
+    printf("Menor consumo de energia: %.2fkW", menor_consumo);
 }
 
 int main(){ 
     Sessao sessoes[MAX_SESSOES];
-    int total_sessoes = 0;
     int opcao;
-
+    int total_sessoes = 0;
+    printf(ORANGE"Bem-vindo ao ChargeGrid Inteligence\n"RESET);
     do{
+        printf("====MENU====\n");
+        printf("Por favor selecione uma das opcoes abaixo: \n");
+        printf("1 - Iniciar nova sessao\n");
+        printf("2 - Listar sessoes\n"); 
+        printf("3 - Buscar por sessao\n");
+        printf("4 - Ordenar sessoes\n");
+        printf("5 - Mostrar estatisticas\n");
+        printf("6 - Encerrar o programa\n");
+        printf("Resposta: ");
+        scanf("%d", &opcao);
+        printf("\n"); 
         switch(opcao){
             case 1: 
             printf("Opcao 1, iniciar sessao, selecionada\n");
             //iniciarSessao();
         }
 
-    }while (opcao != 0);
+    }while (opcao != 6);
     return 0;
 }
