@@ -149,7 +149,7 @@ int iniciarSessao(Sessao sessoes[], int total){
                 scanf("%f", &sessoes[total].carro.potencia_bateria);
                 printf("\n");
                 printf("Potencia da bateria: %f\n", sessoes[total].carro.potencia_bateria);
-                printf("A potencia da bateria esta correta? (Digite q para sim | 2 para nao)\n");
+                printf("A potencia da bateria esta correta? (Digite 1 para sim | 2 para nao)\n");
                 printf("Resposta: ");
                 scanf("%d", &confirma_potencia_bateria);
                 printf("\n");
@@ -342,7 +342,7 @@ void ordenarSessoes(Sessao sessoes[], int total){
         printf(GREEN"Ordenacao por duracao selecionada\n"RESET);
 
         for(int i = 0; i < total -1; i++){
-            for(int j = 0; j < total -1; i++){
+            for(int j = 0; j < total -1; j++){
 
                 float duracao_j;
                 if(sessoes[j].status == 0){
@@ -370,7 +370,25 @@ void ordenarSessoes(Sessao sessoes[], int total){
 }
 
 void mostrarEstatisticas(Sessao sessoes[], int total){
+    int andamento = 0; 
+    int concluidas = 0; 
+    float total_faturamento = 0; 
+    float energia_utilizada = 0;
 
+    for(int i = 0; i < total; i++){
+        if(sessoes[i].status == 0){
+            andamento += 1; 
+        }
+        else{
+            concluidas += 1; 
+            total_faturamento = total_faturamento + sessoes[i].custo;
+            energia_utilizada = energia_utilizada + sessoes[i].energia;
+        }
+    }
+    printf("Total de sessoes em andamento: %d\n", andamento);
+    printf("Total de sessoes concluidas: %d\n", concluidas);
+    printf("Faturamento total das sessoes finalizadas: R$%.2f\n", total_faturamento);
+    printf("Energia total utilizada pelas sessoes concludidas: %.2fkWh\n", energia_utilizada);
 }
 
 int main(){ 
