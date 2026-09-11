@@ -200,85 +200,36 @@ int iniciarSessao(Sessao sessoes[], int total){
 }
 
 void redistribuirPotencia(Sessao sessoes[], int total){
-    int ativas = 0; 
-    // Contagem do numero de sessoes ativas
+    if(total == 0){
+        printf(YELLOW"Nenhuma sessao ativa no momento... \n"RESET);
+        return; 
+    }
+
+    float potencia_por_sessao = LIMITE_POTENCIA_TOTAL / total;
+
     for(int i = 0; i < total; i++){
-        if(sessoes[i].status == 0){
-            ativas +=1;
-        } 
+        sessoes[i].potencia_atual = potencia_por_sessao;
     }
-    if(ativas == 0){
-        printf("Nenhuma sessao ativa no momento... \n");
-        return;
-    }
-
-    float potencia_por_sessao = LIMITE_POTENCIA_TOTAL / ativas;
-
-    //Redistribuindo a potencia pela quantidade de sessoes ativas
-    for(int i = 0; i < total; i++){
-        if(sessoes[i].status == 0){
-            sessoes[i].potencia_atual = potencia_por_sessao;
-        }
-    }
-}
-
-void finalizarSessao(Sessao sessoes[], int total){
-    int id;
-    printf("Por favor digite o ID da sessao que deseja finalizar: ");
-    scanf("%d", &id);
-    printf("\n");
-
-    int idx = -1; 
-    for(int i = 0; i < total; i++){
-        if(sessoes[i].id == id){
-            idx = i;
-            break;
-        }
-    }
-    if(idx == -1){
-        printf("Sessao ID %d nao encontrada\n", id);
-        return;
-    }
-    // Calculando o custo
-    sessoes[idx].hora_fim = time(NULL);
-    float horas = difftime(sessoes[idx].hora_fim, sessoes[idx].hora_inicio) / 3600.0;
-    sessoes[idx].energia = horas * sessoes[idx].potencia_atual;
-    printf(ORANGE"Energia consumida pela sessao ID %d: %fkW\n"RESET, sessoes[idx].id, sessoes[idx].energia);
-    sessoes[idx].custo = sessoes[idx].energia * sessoes[idx].tarifa_kWh;
-    printf(ORANGE"Valor a pagar da sessao ID %d: R$%.2f\n"RESET, sessoes[idx].id, sessoes[idx].custo);
-    sessoes[idx].status = 1;
-    printf(YELLOW"SESSAO ID %d FINALIZADA\n"RESET, sessoes[idx].id);
-    redistribuirPotencia(sessoes, total);
 }
 
 void listarSessoes(Sessao sessoes[], int total){
-    int ativas = 0;
-    for(int i = 0; i < total; i++){
-        if(sessoes[i].status == 0){
-            ativas += 1;
-        }
-    }
-    if(ativas == 0){
+    if(total == 0){
         printf(YELLOW"Nenhuma sessao ativa no momento\n"RESET);
         return;
     }
-    else{
-        printf(BLUE"Quantidade de sessoes ativas: %d\n"RESET, ativas);
+    printf(BLUE"Quantidade de sessoes ativas: %d\n"RESET, total);
     
-        for(int i = 0; i < total; i++){
-            if(sessoes[i].status == 0){
-                printf("ID: %d | Status: %d\n", sessoes[i].id, sessoes[i].status);
-                printf("Nome do usuario da sessao ID %d: %s\n", sessoes[i].id, sessoes[i].nome);
-                printf("Placa do carro da sessao ID %d: %s\n", sessoes[i].id, sessoes[i].carro.placa);
+    for(int i = 0; i < total; i++){
+        printf("ID: %d | Status: %d\n", sessoes[i].id, sessoes[i].status);
+        printf("Nome do usuario da sessao ID %d: %s\n", sessoes[i].id, sessoes[i].nome);
+        printf("Placa do carro da sessao ID %d: %s\n", sessoes[i].id, sessoes[i].carro.placa);
 
-                float horas_atuais = difftime(time(NULL), sessoes[i].hora_inicio) / 3600.0;
-                float energia_atual = horas_atuais * sessoes[i].potencia_atual;
-                float custo_atual = energia_atual * sessoes[i].tarifa_kWh;
-                printf(ORANGE"Energia consumida ate o momento: %.2fkW | Custo ate o momento: R$%.2f\n"RESET, energia_atual, custo_atual);
-            }
-        }
+        float horas_atuais = difftime(time(NULL), sessoes[i].hora_inicio) / 3600.0;
+        float energia_atual = horas_atuais * sessoes[i].potencia_atual;
+        float custo_atual = energia_atual * sessoes[i].tarifa_kWh;
+        printf(ORANGE"Energia consumida ate o momento: %.2fkW | Custo ate o momento: R$%.2f\n"RESET, energia_atual, custo_atual);
+        
     }
-
 }
 
 int buscarSessaoPorId(Sessao sessoes[], int total, int id){
@@ -353,20 +304,8 @@ void ordenarSessoes(Sessao sessoes[], int total){
 
         for(int i = 0; i < total -1; i++){
             for(int j = 0; j < total -1; j++){
-
-                float duracao_j;
-                if(sessoes[j].status == 0){
-                    duracao_j = difftime(time(NULL), sessoes[j].hora_inicio);
-
-                } else{
-                    duracao_j = difftime(sessoes[j].hora_fim, sessoes[j].hora_inicio);
-                }
-                float duracao_j1;
-                if(sessoes[j+1].status == 0){
-                    duracao_j1 = difftime(time(NULL), sessoes[j+1].hora_inicio);
-                } else{
-                    duracao_j1 = difftime(sessoes[j+1].hora_fim, sessoes[j+1].hora_inicio);
-                }
+                float duracao_j = difftime(time(NULL), sessoes[j].hora_inicio);
+                float duracao_j1 = difftime(time(NULL), sessoes[j+1].hora_inicio);
 
                 if(duracao_j > duracao_j1){
                     Sessao temp = sessoes[j];
@@ -390,19 +329,17 @@ void mostrarEstatisticas(Sessao sessoes[], int total){
     float maior_consumo = calcularEnergiaAtual(sessoes[0]); 
     float menor_consumo = calcularEnergiaAtual(sessoes[0]);
     for(int i = 0; i < total; i++){
-        if(sessoes[i].status == 0){
-            total_sessoes +=1;
-            float energia_i = calcularEnergiaAtual(sessoes[i]);
-            float custo_i = energia_i * sessoes[i].tarifa_kWh;
-            energia_utilizada += energia_i;
-            custo_total += custo_i;
+        total_sessoes +=1;
+        float energia_i = calcularEnergiaAtual(sessoes[i]);
+        float custo_i = energia_i * sessoes[i].tarifa_kWh;
+        energia_utilizada += energia_i;
+        custo_total += custo_i;
 
-            if(energia_i > maior_consumo){
-                maior_consumo = energia_i;
-            }
-            if(energia_i < menor_consumo){
-                menor_consumo = energia_i;
-            }
+        if(energia_i > maior_consumo){
+            maior_consumo = energia_i;
+        }
+        if(energia_i < menor_consumo){
+            menor_consumo = energia_i;
         }
     }
     float media_custo = custo_total / total_sessoes;
@@ -417,6 +354,7 @@ void mostrarEstatisticas(Sessao sessoes[], int total){
 int main(){ 
     Sessao sessoes[MAX_SESSOES];
     int opcao;
+    int id;
     int total_sessoes = 0;
     printf(ORANGE"Bem-vindo ao ChargeGrid Inteligence\n"RESET);
     do{
@@ -424,7 +362,7 @@ int main(){
         printf("Por favor selecione uma das opcoes abaixo: \n");
         printf("1 - Iniciar nova sessao\n");
         printf("2 - Listar sessoes\n"); 
-        printf("3 - Buscar por sessao\n");
+        printf("3 - Buscar por sessao por ID\n");
         printf("4 - Ordenar sessoes\n");
         printf("5 - Mostrar estatisticas\n");
         printf("6 - Encerrar o programa\n");
@@ -434,7 +372,40 @@ int main(){
         switch(opcao){
             case 1: 
             printf("Opcao 1, iniciar sessao, selecionada\n");
-            //iniciarSessao();
+            iniciarSessao(sessoes, total_sessoes);
+            break;
+
+            case 2: 
+            printf("Opcao 2, listar sessoes, selecionada\n");
+            listarSessoes(sessoes, total_sessoes);
+            break;
+
+            case 3: 
+            printf("Opcao 3, bucar sessao por ID, selecionada\n");
+            buscarSessaoPorId(sessoes, total_sessoes, id);
+            break;
+
+            case 4: 
+            printf("Opcao 4, ordenar sessoes, selecionada\n");
+            ordenarSessoes(sessoes, total_sessoes);
+            break;
+
+            case 5: 
+            printf("Opcao 5, mostrar estatisticas, selecionada\n");
+            ordenarSessoes(sessoes, total_sessoes);
+            break;
+
+            case 6:
+            printf("Opcao 6, encerrar programa, selecionada\n");
+            printf(GREEN"Obrigado por usar EV_Chargers\n");
+            printf("Ate a proxima\n"RESET);
+            return 0;
+
+            default: 
+            printf(RED"Opcao selecionada invalida... tente novamente\n"RESET);
+            printf("\n");
+            sleep(2);
+            break;
         }
 
     }while (opcao != 6);
