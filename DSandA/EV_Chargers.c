@@ -81,13 +81,14 @@ int iniciarSessao(Sessao sessoes[], int total){
     printf("Por favor, guarde o ID da sua sessao, ele sera necessario para finalizar a sessao e realizar o pagamento\n");
     // Registrando o nome do cliente
     do{
-        printf("Por favor digite o seu nome e sobrenome: ");
+        printf("Digite o seu nome e sobrenome: ");
         fgets(sessoes[total].nome, sizeof(sessoes[total].nome), stdin);
         sessoes[total].nome[strcspn(sessoes[total].nome, "\n")] = '\0'; //Usa o strcspn para tirar o "\n" que sobra do fgets, assim nao da erro no print
         printf("Nome digitado: %s\n", sessoes[total].nome);
         printf("O nome acima esta correto? (Digite 1 para sim | 2 para nao)\n");
         printf("Resposta: ");
         scanf("%d", &confirma_nome);
+        while(getchar() !='\n');
         printf("\n");
         if(confirma_nome < 1 || confirma_nome > 2){
             printf("Opcao digitada invalida... tente novamente\n");
@@ -107,6 +108,7 @@ int iniciarSessao(Sessao sessoes[], int total){
         printf("A placa do carro esta certa? (Digite 1 para sim | 2 para nao)");
         printf("Resposta: ");
         scanf("%d", &confirma_placa);
+        while(getchar() !='\n');
         printf("\n");
         if(confirma_placa < 1 || confirma_placa > 2){
             printf("Opcao invalida... tente novamente\n");
@@ -125,6 +127,7 @@ int iniciarSessao(Sessao sessoes[], int total){
         printf("O modelo do caro esta certo? (Digite 1 para sim | 2 para nao)\n");
         printf("Resposta: ");  
         scanf("%d", &confirma_modelo);
+        while(getchar() !='\n');
         printf("\n");
         if(confirma_modelo < 1 || confirma_modelo > 2){
             printf("Opcao invalida... tente novamente\n");
@@ -233,9 +236,16 @@ void listarSessoes(Sessao sessoes[], int total){
 }
 
 int buscarSessaoPorId(Sessao sessoes[], int total, int id){
+    printf("Por favor digite o ID da sessao que deseja buscar: ");
+    scanf("%d", &id);
+    printf("\n");
     for(int i = 0; i < total; i++){
         if(sessoes[i].id == id){
+            printf("ID encontrado!\n");
             return i;
+        }
+        else{
+            printf("ID nao encontrado, verifique se voce digitou corretamente e tente novamente\n");
         }
     }
     return -1;
@@ -368,6 +378,7 @@ int main(){
         printf("6 - Encerrar o programa\n");
         printf("Resposta: ");
         scanf("%d", &opcao);
+        while(getchar() !='\n'); 
         printf("\n"); 
         switch(opcao){
             case 1: 
