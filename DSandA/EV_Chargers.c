@@ -17,6 +17,8 @@ typedef struct{
     char placa[8];
     char modelo[50];
     float potencia_bateria;
+    float porcentagem_bateria;
+    float percentual_alvo;
 }Veiculo;
 
 typedef struct{
@@ -69,6 +71,9 @@ int iniciarSessao(Sessao sessoes[], int total){
     int confirma_modelo;
     int opcao_bateria;
     int confirma_potencia_bateria;
+    int confirma_bateria; //Porcentagem da bateria
+    int opcao_alvo; //Opcao do alvo da carga da bateria
+    int confirma_alvo; //Confirmacao do alvo da carga da bateria
 
     if (total >= MAX_SESSOES){
         printf(RED"TODAS AS VAGAS FORAM PREENCHIDAS\n"RESET);
@@ -139,6 +144,77 @@ int iniciarSessao(Sessao sessoes[], int total){
             printf("Sem problemas, vamos voltar essa etapa\n");
         }
     }while(confirma_modelo != 1);
+
+    // Porcentagem de carga atual da bateria
+    do{
+        printf("Digite a porcentagem de carga da bateria: ");
+        scanf("%f", &sessoes[total].carro.porcentagem_bateria);
+        if(sessoes[total].carro.porcentagem_bateria < 1 || sessoes[total].carro.porcentagem_bateria > 100){
+            printf(YELLOW"Porcentagem da bateria digitada invalida...\n"RESET);
+            printf("A porcentagem da carga da bateria nao pode ser menor que 1 ou maior que 100\n");
+            printf("\n");
+            continue;
+        }
+        printf("Carga atual da bateria: %.1f%%\n", sessoes[total].carro.porcentagem_bateria);
+        printf("A porcentagem de carga da bateria esta correta? (Digite 1 para sim | 2 para nao)\n");
+        printf("Resposta: ");
+        scanf("%d", &confirma_bateria);
+        if(sessoes[total].carro.porcentagem_bateria >= 90 && confirma_bateria == 1){
+            printf("O seu carro nao precisa de recarga no momento...\n");
+            printf("Carga atual da bateria: %.1f%%\n", sessoes[total].carro.porcentagem_bateria);
+            printf("\n");
+            return total;
+        }
+        if(confirma_bateria < 1 || confirma_bateria > 2){
+            printf(YELLOW"Opcao invalida... tente novamente\n"RESET);
+        }
+        else if(confirma_bateria == 2){
+            printf("Sem problemas, vamos voltar essa etapa\n");
+        }
+    }while(confirma_bateria != 1);
+
+    // Percentual alvo da bateria
+
+    do{
+        printf("Digite 1 para carregar totalmente a bateria (100%%)\n");
+        printf("Digite 2 para selecionar um percentual alvo da carga da bateria\n");
+        printf("Resposta: ");
+        scanf("%d", &opcao_alvo);
+        printf("\n");
+        if(opcao_alvo == 1){
+            printf("Carga total da bateria selecionada\n");
+            sessoes[total].carro.percentual_alvo = 100;
+            confirma_alvo = 1;
+        }
+        else if(opcao_alvo == 2){
+            printf("Digite o percentual alvo desejado: ");
+            scanf("%f", &sessoes[total].carro.percentual_alvo);
+            printf("\n");
+            if(sessoes[total].carro.percentual_alvo <= sessoes[total].carro.porcentagem_bateria){
+                printf(YELLOW"O percentual alvo precisa ser maior que o percentual e carga atual da bateria\n"RESET);
+                printf("\n");
+                continue;
+            }
+            else if(sessoes[total].carro.percentual_alvo > 100 || sessoes[total].carro.percentual_alvo < 1){
+                printf(YELLOW"O percentual alvo precisa ser um numero maior que 1 e menor ou igual a 100\n"RESET);
+                printf("\n");
+                continue;
+            }
+            else{
+                printf("Percentual alvo: %.1f%%\n", sessoes[total].carro.percentual_alvo);
+                printf("O percentual alvo esta correto? (1 para sim | 2 para nao)\n");
+                printf("Resposta: ");
+                scanf("%d", &confirma_alvo);
+                if(confirma_alvo < 1 || confirma_alvo > 2){
+                    printf(YELLOW"Opcao invalida... tente novamente\n"RESET);
+                }
+                else{
+                    printf("Sem problemas, vamos voltar essa etapa\n");
+                }
+            }
+        }
+
+    }while(confirma_alvo !=1);
 
     // Potencia da bateria
     do{
@@ -270,6 +346,7 @@ int buscarSessaoPorId(Sessao sessoes[], int total, int id){
             printf("Custo atual: %.2f\n", custo_atual);
             usleep(200000);
             printf("\n");
+            usleep(500000);
             return i;
         }
     }
@@ -323,6 +400,13 @@ void ordenarSessoes(Sessao sessoes[], int total){
                 }
             }
         }
+        for(int i = 0; i < total; i++){
+            float energia = calcularEnergiaAtual(sessoes[i]);
+            printf(GREEN"ID da sessao: %d\n"RESET, sessoes[i].id);
+            printf(GREEN"Energia consumida: %.2fkW\n"RESET, energia);
+            printf("\n");
+            usleep(100000);
+        }
         break;
 
         case 3: 
@@ -338,6 +422,13 @@ void ordenarSessoes(Sessao sessoes[], int total){
                 }
 
             }
+        }
+        for(int i = 0; i < total; i++){
+            float custo = calcularEnergiaAtual(sessoes[i]) * sessoes[i].tarifa_kWh;
+            printf(GREEN"ID da sessao: %d\n"RESET, sessoes[i].id);
+            printf(GREEN"Custo da sessao: R$%.2f\n"RESET, custo);
+            printf("\n");
+            usleep(100000);
         }
         break;
 
@@ -355,6 +446,14 @@ void ordenarSessoes(Sessao sessoes[], int total){
                     sessoes[j+1] = temp;
                 }
             }
+        }
+        for(int i = 0; i < total; i++){
+            float duracao = difftime(time(NULL), sessoes[i].hora_inicio);
+            int horas = duracao / 3600;
+            int minutos = (int)duracao % 3600 / 60;
+            printf(GREEN"ID da sessao: %d\n"RESET, sessoes[i].id);
+            printf(GREEN"Duracao da sessao: %dh %dm\n"RESET, horas, minutos);
+            usleep(100000);
         }
         break;
     }
@@ -419,6 +518,7 @@ int main(){
             printf(BLUE"Opcao 1, iniciar sessao, selecionada\n"RESET);
             total_sessoes = iniciarSessao(sessoes, total_sessoes);
             redistribuirPotencia(sessoes, total_sessoes);
+            system("clear");
             break;
 
             case 2: 
