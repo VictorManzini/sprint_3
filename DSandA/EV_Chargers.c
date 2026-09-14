@@ -71,7 +71,7 @@ int iniciarSessao(Sessao sessoes[], int total){
     int confirma_potencia_bateria;
 
     if (total >= MAX_SESSOES){
-        printf("TODAS AS VAGAS FORAM PREENCHIDAS\n");
+        printf(RED"TODAS AS VAGAS FORAM PREENCHIDAS\n"RESET);
         printf("Por favor, volte mais tarde quando houver vagas disponiveis\n");
         return 1;
     }
@@ -91,7 +91,7 @@ int iniciarSessao(Sessao sessoes[], int total){
         while(getchar() !='\n');
         printf("\n");
         if(confirma_nome < 1 || confirma_nome > 2){
-            printf("Opcao digitada invalida... tente novamente\n");
+            printf(YELLOW"Opcao digitada invalida... tente novamente\n"RESET);
         }
         else if(confirma_nome == 2){
             printf("Sem problemas, vamos voltar essa etapa\n");
@@ -105,13 +105,13 @@ int iniciarSessao(Sessao sessoes[], int total){
         fgets(sessoes[total].carro.placa, sizeof(sessoes[total].carro.placa), stdin);
         sessoes[total].carro.placa[strcspn(sessoes[total].carro.placa, "\n")] = '\0';
         printf("Placa digitada: %s\n", sessoes[total].carro.placa);
-        printf("A placa do carro esta certa? (Digite 1 para sim | 2 para nao)");
+        printf("A placa do carro esta certa? (Digite 1 para sim | 2 para nao)\n");
         printf("Resposta: ");
         scanf("%d", &confirma_placa);
         while(getchar() !='\n');
         printf("\n");
         if(confirma_placa < 1 || confirma_placa > 2){
-            printf("Opcao invalida... tente novamente\n");
+            printf(YELLOW"Opcao invalida... tente novamente\n"RESET);
         }
         else if(confirma_placa == 2){
             printf("Sem problemas, vamos voltar essa etapa\n");
@@ -130,7 +130,7 @@ int iniciarSessao(Sessao sessoes[], int total){
         while(getchar() !='\n');
         printf("\n");
         if(confirma_modelo < 1 || confirma_modelo > 2){
-            printf("Opcao invalida... tente novamente\n");
+            printf(YELLOW"Opcao invalida... tente novamente\n"RESET);
         }
         else if(confirma_modelo == 2){
             printf("Sem problemas, vamos voltar essa etapa\n");
@@ -145,11 +145,14 @@ int iniciarSessao(Sessao sessoes[], int total){
         scanf("%d", &opcao_bateria);
         printf("\n");
         if(opcao_bateria != 1 && opcao_bateria != 2){
-            printf("Opcao invalida... tente novamente\n");
+            printf(YELLOW"Opcao invalida... tente novamente\n"RESET);
             
         }
         else if(opcao_bateria == 2){
             sessoes[total].carro.potencia_bateria = 38.8; // 38.8 kWh
+            printf("Potencia da bateria selecionada automaticamente em 38.8kWh\n");
+            printf("\n");
+
         }
         else{
             do{
@@ -162,7 +165,7 @@ int iniciarSessao(Sessao sessoes[], int total){
                 scanf("%d", &confirma_potencia_bateria);
                 printf("\n");
                 if(confirma_potencia_bateria < 1 || confirma_potencia_bateria > 2){
-                    printf("Opcao invalida... tente novamente\n");
+                    printf(YELLOW"Opcao invalida... tente novamente\n"RESET);
                 }
                 else if(confirma_potencia_bateria == 2){
                     printf("Sem problemas, vamos voltar essa etapa\n");
@@ -180,7 +183,7 @@ int iniciarSessao(Sessao sessoes[], int total){
         scanf("%d", &sessoes[total].tipo_carga);
         printf("\n");
         if(sessoes[total].tipo_carga != 1 && sessoes[total].tipo_carga != 2){
-            printf("Tipo de carga selecionada incorreta... tente novamente\n");
+            printf(YELLOW"Tipo de carga selecionada incorreta... tente novamente\n"RESET);
         }
         else if(sessoes[total].tipo_carga == 2){
             printf("Carga Lenta selecionada\n");
@@ -233,6 +236,7 @@ void listarSessoes(Sessao sessoes[], int total){
         printf(ORANGE"Energia consumida ate o momento: %.2fkW | Custo ate o momento: R$%.2f\n"RESET, energia_atual, custo_atual);
         
     }
+    printf("\n");
 }
 
 int buscarSessaoPorId(Sessao sessoes[], int total, int id){
@@ -243,9 +247,6 @@ int buscarSessaoPorId(Sessao sessoes[], int total, int id){
         if(sessoes[i].id == id){
             printf("ID encontrado!\n");
             return i;
-        }
-        else{
-            printf("ID nao encontrado, verifique se voce digitou corretamente e tente novamente\n");
         }
     }
     return -1;
@@ -358,14 +359,15 @@ void mostrarEstatisticas(Sessao sessoes[], int total){
     printf("Custo total: R$%.2f\n", custo_total);
     printf("Custo medio das recargas: R$%.2f\n", media_custo); 
     printf("Maior consumo de energia: %.2fkW\n", maior_consumo); 
-    printf("Menor consumo de energia: %.2fkW", menor_consumo);
+    printf("Menor consumo de energia: %.2fkW\n", menor_consumo);
+    printf("\n");
 }
 
 int main(){ 
     Sessao sessoes[MAX_SESSOES];
     int opcao;
-    int id;
     int total_sessoes = 0;
+    system("clear");
     printf(ORANGE"Bem-vindo ao ChargeGrid Inteligence\n"RESET);
     do{
         printf("====MENU====\n");
@@ -383,7 +385,8 @@ int main(){
         switch(opcao){
             case 1: 
             printf("Opcao 1, iniciar sessao, selecionada\n");
-            iniciarSessao(sessoes, total_sessoes);
+            total_sessoes = iniciarSessao(sessoes, total_sessoes);
+            redistribuirPotencia(sessoes, total_sessoes);
             break;
 
             case 2: 
@@ -393,7 +396,7 @@ int main(){
 
             case 3: 
             printf("Opcao 3, bucar sessao por ID, selecionada\n");
-            buscarSessaoPorId(sessoes, total_sessoes, id);
+            buscarSessaoPorId(sessoes, total_sessoes, 0);
             break;
 
             case 4: 
@@ -403,7 +406,7 @@ int main(){
 
             case 5: 
             printf("Opcao 5, mostrar estatisticas, selecionada\n");
-            ordenarSessoes(sessoes, total_sessoes);
+            mostrarEstatisticas(sessoes, total_sessoes);
             break;
 
             case 6:
