@@ -162,7 +162,7 @@ int iniciarSessao(Sessao sessoes[], int total){
                 printf("Digite a potencia da bateria em kW: ");
                 scanf("%f", &sessoes[total].carro.potencia_bateria);
                 printf("\n");
-                printf("Potencia da bateria: %f\n", sessoes[total].carro.potencia_bateria);
+                printf("Potencia da bateria: %.2f\n", sessoes[total].carro.potencia_bateria);
                 printf("A potencia da bateria esta correta? (Digite 1 para sim | 2 para nao)\n");
                 printf("Resposta: ");
                 scanf("%d", &confirma_potencia_bateria);
@@ -302,6 +302,11 @@ void ordenarSessoes(Sessao sessoes[], int total){
                     sessoes[j+1] = temp;
                 }
             }
+        }
+        printf(GREEN"SESSOES ORDENADAS POR ID: \n"RESET);
+        for(int i = 0; i < total; i++){
+            printf("ID: %d\n", sessoes[i].id);
+            usleep(100000);
         }
         break;
 
