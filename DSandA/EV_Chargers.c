@@ -77,8 +77,11 @@ int iniciarSessao(Sessao sessoes[], int total){
     }
     // Criando o ID da sessao
     sessoes[total].id = total + 1;
-    printf("ID da sessao: %d\n", sessoes[total].id);
+    printf(RED"ID da sessao: "RESET "%d\n", sessoes[total].id);
+    printf("\n");
     printf("Por favor, guarde o ID da sua sessao, ele sera necessario para finalizar a sessao e realizar o pagamento\n");
+    printf("\n");
+    usleep(500000);
     // Registrando o nome do cliente
     do{
         printf("Digite o seu nome e sobrenome: ");
@@ -237,6 +240,7 @@ void listarSessoes(Sessao sessoes[], int total){
         
     }
     printf("\n");
+    sleep(1);
 }
 
 int buscarSessaoPorId(Sessao sessoes[], int total, int id){
@@ -245,10 +249,32 @@ int buscarSessaoPorId(Sessao sessoes[], int total, int id){
     printf("\n");
     for(int i = 0; i < total; i++){
         if(sessoes[i].id == id){
-            printf("ID encontrado!\n");
+            float horas_atuais = difftime(time(NULL), sessoes[i].hora_inicio) / 3600.0;
+            float energia_atual = horas_atuais * sessoes[i].potencia_atual;
+            float custo_atual = energia_atual * sessoes[i].tarifa_kWh;
+
+            printf(GREEN"ID encontrado!\n"RESET);
+            usleep(200000); 
+            printf("ID: %d\n", sessoes[i].id);
+            usleep(200000);
+            printf("Nome do usuario: %s\n", sessoes[i].nome);
+            usleep(200000);
+            printf("Marca e modelo do veiculo: %s\n", sessoes[i].carro.modelo);
+            usleep(200000);
+            printf("Placa do veiculo: %s\n", sessoes[i].carro.placa);
+            usleep(200000);
+            printf("Potencia da bateria: %.2f\n", sessoes[i].carro.potencia_bateria);
+            usleep(200000);
+            printf("Energia consumida ate o momento: %.2fkW\n", energia_atual);
+            usleep(200000);
+            printf("Custo atual: %.2f\n", custo_atual);
+            usleep(200000);
+            printf("\n");
             return i;
         }
     }
+    printf(RED"ID de sessao nao encontrado\n"RESET);
+    printf("\n");
     return -1;
 }
 
@@ -327,6 +353,7 @@ void ordenarSessoes(Sessao sessoes[], int total){
         }
         break;
     }
+    sleep(1);
 }
 
 void mostrarEstatisticas(Sessao sessoes[], int total){
@@ -384,7 +411,7 @@ int main(){
         printf("\n"); 
         switch(opcao){
             case 1: 
-            printf("Opcao 1, iniciar sessao, selecionada\n");
+            printf(BLUE"Opcao 1, iniciar sessao, selecionada\n"RESET);
             total_sessoes = iniciarSessao(sessoes, total_sessoes);
             redistribuirPotencia(sessoes, total_sessoes);
             break;
@@ -413,6 +440,7 @@ int main(){
             printf("Opcao 6, encerrar programa, selecionada\n");
             printf(GREEN"Obrigado por usar EV_Chargers\n");
             printf("Ate a proxima\n"RESET);
+            printf("\n");
             return 0;
 
             default: 
