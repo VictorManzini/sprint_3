@@ -89,65 +89,71 @@ int iniciarSessao(Sessao sessoes[], int total){
     usleep(500000);
     // Registrando o nome do cliente
     do{
-        printf("Digite o seu nome e sobrenome: ");
+        printf(BLUE"Digite o seu nome e sobrenome: "RESET);
         fgets(sessoes[total].nome, sizeof(sessoes[total].nome), stdin);
         sessoes[total].nome[strcspn(sessoes[total].nome, "\n")] = '\0'; //Usa o strcspn para tirar o "\n" que sobra do fgets, assim nao da erro no print
-        printf("Nome digitado: %s\n", sessoes[total].nome);
-        printf("O nome acima esta correto? (Digite 1 para sim | 2 para nao)\n");
+        printf(ORANGE"Nome digitado:"RESET" %s\n", sessoes[total].nome);
+        printf(YELLOW"O nome acima esta correto?"RESET" (Digite 1 para sim | 2 para nao)\n");
         printf("Resposta: ");
         scanf("%d", &confirma_nome);
         while(getchar() !='\n');
         printf("\n");
         if(confirma_nome < 1 || confirma_nome > 2){
             printf(YELLOW"Opcao digitada invalida... tente novamente\n"RESET);
+            printf("\n");
         }
         else if(confirma_nome == 2){
-            printf("Sem problemas, vamos voltar essa etapa\n");
+            printf(ORANGE"Sem problemas, vamos voltar essa etapa\n"RESET);
+            printf("\n");
         }
     }while(confirma_nome != 1);
     printf("\n");
     // Registrando as infos do veiculo
     // Placa do veiculo
     do{
-        printf("Digite a placa do carro: ");
+        printf(BLUE"Digite a placa do carro: "RESET);
         fgets(sessoes[total].carro.placa, sizeof(sessoes[total].carro.placa), stdin);
         sessoes[total].carro.placa[strcspn(sessoes[total].carro.placa, "\n")] = '\0';
-        printf("Placa digitada: %s\n", sessoes[total].carro.placa);
-        printf("A placa do carro esta certa? (Digite 1 para sim | 2 para nao)\n");
+        printf(ORANGE"Placa digitada:"RESET" %s\n", sessoes[total].carro.placa);
+        printf(YELLOW"A placa do carro esta certa?"RESET" (Digite 1 para sim | 2 para nao)\n");
         printf("Resposta: ");
         scanf("%d", &confirma_placa);
         while(getchar() !='\n');
         printf("\n");
         if(confirma_placa < 1 || confirma_placa > 2){
             printf(YELLOW"Opcao invalida... tente novamente\n"RESET);
+            printf("\n");
         }
         else if(confirma_placa == 2){
-            printf("Sem problemas, vamos voltar essa etapa\n");
+            printf(ORANGE"Sem problemas, vamos voltar essa etapa\n"RESET);
+            printf("\n");
         }
     }while(confirma_placa != 1);
 
     // Modelo do veiculo
     do{
-        printf("Digite o modelo do veiculo: ");
+        printf(BLUE"Digite o modelo do veiculo: "RESET);
         fgets(sessoes[total].carro.modelo, sizeof(sessoes[total].carro.modelo), stdin);
         sessoes[total].carro.modelo[strcspn(sessoes[total].carro.modelo, "\n")] = '\0';
-        printf("Modelo do carro: %s\n", sessoes[total].carro.modelo);
-        printf("O modelo do caro esta certo? (Digite 1 para sim | 2 para nao)\n");
+        printf(ORANGE"Modelo do carro:"RESET" %s\n", sessoes[total].carro.modelo);
+        printf(YELLOW"O modelo do caro esta certo?"RESET" (Digite 1 para sim | 2 para nao)\n");
         printf("Resposta: ");  
         scanf("%d", &confirma_modelo);
         while(getchar() !='\n');
         printf("\n");
         if(confirma_modelo < 1 || confirma_modelo > 2){
             printf(YELLOW"Opcao invalida... tente novamente\n"RESET);
+            printf("\n");
         }
         else if(confirma_modelo == 2){
-            printf("Sem problemas, vamos voltar essa etapa\n");
+            printf(ORANGE"Sem problemas, vamos voltar essa etapa\n"RESET);
+            printf("\n");
         }
     }while(confirma_modelo != 1);
 
     // Porcentagem de carga atual da bateria
     do{
-        printf("Digite a porcentagem de carga da bateria: ");
+        printf(BLUE"Digite a porcentagem de carga da bateria: "RESET);
         scanf("%f", &sessoes[total].carro.porcentagem_bateria);
         if(sessoes[total].carro.porcentagem_bateria < 1 || sessoes[total].carro.porcentagem_bateria > 100){
             printf(YELLOW"Porcentagem da bateria digitada invalida...\n"RESET);
@@ -155,108 +161,82 @@ int iniciarSessao(Sessao sessoes[], int total){
             printf("\n");
             continue;
         }
-        printf("Carga atual da bateria: %.1f%%\n", sessoes[total].carro.porcentagem_bateria);
-        printf("A porcentagem de carga da bateria esta correta? (Digite 1 para sim | 2 para nao)\n");
+        printf(ORANGE"Carga atual da bateria:"RESET" %.1f%%\n", sessoes[total].carro.porcentagem_bateria);
+        printf(YELLOW"A porcentagem de carga da bateria esta correta?"RESET" (Digite 1 para sim | 2 para nao)\n");
         printf("Resposta: ");
         scanf("%d", &confirma_bateria);
         if(sessoes[total].carro.porcentagem_bateria >= 90 && confirma_bateria == 1){
-            printf("O seu carro nao precisa de recarga no momento...\n");
-            printf("Carga atual da bateria: %.1f%%\n", sessoes[total].carro.porcentagem_bateria);
+            printf(YELLOW"O seu carro nao precisa de recarga no momento...\n");
+            printf("Carga atual da bateria:"RESET" %.1f%%\n", sessoes[total].carro.porcentagem_bateria);
             printf("\n");
             return total;
         }
         if(confirma_bateria < 1 || confirma_bateria > 2){
             printf(YELLOW"Opcao invalida... tente novamente\n"RESET);
+            printf("\n");
         }
         else if(confirma_bateria == 2){
-            printf("Sem problemas, vamos voltar essa etapa\n");
+            printf(ORANGE"Sem problemas, vamos voltar essa etapa\n"RESET);
+            printf("\n");
         }
+        printf("\n");
     }while(confirma_bateria != 1);
 
     // Percentual alvo da bateria
     do{
-        printf("Digite 1 para carregar totalmente a bateria (100%%)\n");
-        printf("Digite 2 para selecionar um percentual alvo da carga da bateria\n");
+        printf(BLUE"Digite 1"RESET" para carregar totalmente a bateria (100%%)\n");
+        printf(RED"Digite 2"RESET" para selecionar um percentual alvo da carga da bateria\n");
         printf("Resposta: ");
         scanf("%d", &opcao_alvo);
         printf("\n");
         switch(opcao_alvo){
             case 1: 
-                printf("Carga total da bateria selecionada\n");
+                printf(GREEN"Carga total da bateria selecionada\n"RESET);
                 sessoes[total].carro.percentual_alvo = 100;
                 confirma_alvo = 1;
                 break;
             
             case 2:
-                printf("Digite o percentual alvo desejado: ");
+                printf(BLUE"Digite o percentual alvo desejado: "RESET);
                 scanf("%f", &sessoes[total].carro.percentual_alvo);
                 printf("\n");
                 if(sessoes[total].carro.percentual_alvo <= sessoes[total].carro.porcentagem_bateria){
-                    printf("O percentual alvo nao pode ser maior ou igual a porcentagem atual da bateria\n");
+                    printf(RED"O percentual alvo nao pode ser maior ou igual a porcentagem atual da bateria\n"RESET);
+                    printf("\n");
                     confirma_alvo = 0;
                     break;
                 }
                 else if(sessoes[total].carro.percentual_alvo > 100 || sessoes[total].carro.percentual_alvo < 1){
-                    printf("O percentual alvo precisa ser um valor maior que 1 e menor que 100");
+                    printf(RED"O percentual alvo precisa ser um valor maior que 1 e menor que 100\n"RESET);
+                    printf("\n");
                     confirma_alvo = 0;
                     break;
                 }
                 else{
-                    printf("Percentual alvo desejado: %.0f\n", sessoes[total].carro.percentual_alvo);
-                    printf("O percentual alvo desejado esta correto? (Digite 1 para sim | 2 para nao)\n");
+                    printf(ORANGE"Percentual alvo desejado:"RESET" %.0f\n", sessoes[total].carro.percentual_alvo);
+                    printf(YELLOW"O percentual alvo desejado esta correto?"RESET" (Digite 1 para sim | 2 para nao)\n");
                     scanf("%d", &confirma_alvo);
-                    if(confirma_alvo != 1 || confirma_alvo != 2){
+                    printf("\n");
+                    if(confirma_alvo < 1 || confirma_alvo > 2){
                         printf(YELLOW"Opcao invalida... tente novamente\n"RESET);
+                        printf("\n");
                         break;
                     }
                     else if(confirma_alvo == 2){
-                        printf("Sem prolbemas, vamos voltar essa etapa\n");
+                        printf(ORANGE"Sem prolbemas, vamos voltar essa etapa\n"RESET);
+                        printf("\n");
                         break;
                     }
+                break;
                 }
+            default:
+                printf(YELLOW"Opcao invalida... tente novamente\n"RESET);
+                printf("\n");
+                confirma_alvo = 0;
+
+        printf("\n");
         }
     }while(confirma_alvo != 1);
-
-    /*do{
-        printf("Digite 1 para carregar totalmente a bateria (100%%)\n");
-        printf("Digite 2 para selecionar um percentual alvo da carga da bateria\n");
-        printf("Resposta: ");
-        scanf("%d", &opcao_alvo);
-        printf("\n");
-        if(opcao_alvo == 1){
-            printf("Carga total da bateria selecionada\n");
-            sessoes[total].carro.percentual_alvo = 100;
-            confirma_alvo = 1;
-        }
-        else if(opcao_alvo == 2){
-            printf("Digite o percentual alvo desejado: ");
-            scanf("%f", &sessoes[total].carro.percentual_alvo);
-            printf("\n");
-            if(sessoes[total].carro.percentual_alvo <= sessoes[total].carro.porcentagem_bateria){
-                printf(YELLOW"O percentual alvo precisa ser maior que o percentual e carga atual da bateria\n"RESET);
-                printf("\n");
-                continue;
-            }
-            else if(sessoes[total].carro.percentual_alvo > 100 || sessoes[total].carro.percentual_alvo < 1){
-                printf(YELLOW"O percentual alvo precisa ser um numero maior que 1 e menor ou igual a 100\n"RESET);
-                printf("\n");
-                continue;
-            }
-            else{
-                printf("Percentual alvo: %.1f%%\n", sessoes[total].carro.percentual_alvo);
-                printf("O percentual alvo esta correto? (1 para sim | 2 para nao)\n");
-                printf("Resposta: ");
-                scanf("%d", &confirma_alvo);
-                if(confirma_alvo < 1 || confirma_alvo > 2){
-                    printf(YELLOW"Opcao invalida... tente novamente\n"RESET);
-                }
-                else{
-                    printf("Sem problemas, vamos voltar essa etapa\n");
-                }
-            }
-        }
-
-    }while(confirma_alvo !=1);*/
 
     // Potencia da bateria
     do{
