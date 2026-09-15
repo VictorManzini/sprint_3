@@ -174,8 +174,50 @@ int iniciarSessao(Sessao sessoes[], int total){
     }while(confirma_bateria != 1);
 
     // Percentual alvo da bateria
-
     do{
+        printf("Digite 1 para carregar totalmente a bateria (100%%)\n");
+        printf("Digite 2 para selecionar um percentual alvo da carga da bateria\n");
+        printf("Resposta: ");
+        scanf("%d", &opcao_alvo);
+        printf("\n");
+        switch(opcao_alvo){
+            case 1: 
+                printf("Carga total da bateria selecionada\n");
+                sessoes[total].carro.percentual_alvo = 100;
+                confirma_alvo = 1;
+                break;
+            
+            case 2:
+                printf("Digite o percentual alvo desejado: ");
+                scanf("%f", &sessoes[total].carro.percentual_alvo);
+                printf("\n");
+                if(sessoes[total].carro.percentual_alvo <= sessoes[total].carro.porcentagem_bateria){
+                    printf("O percentual alvo nao pode ser maior ou igual a porcentagem atual da bateria\n");
+                    confirma_alvo = 0;
+                    break;
+                }
+                else if(sessoes[total].carro.percentual_alvo > 100 || sessoes[total].carro.percentual_alvo < 1){
+                    printf("O percentual alvo precisa ser um valor maior que 1 e menor que 100");
+                    confirma_alvo = 0;
+                    break;
+                }
+                else{
+                    printf("Percentual alvo desejado: %.0f\n", sessoes[total].carro.percentual_alvo);
+                    printf("O percentual alvo desejado esta correto? (Digite 1 para sim | 2 para nao)\n");
+                    scanf("%d", &confirma_alvo);
+                    if(confirma_alvo != 1 || confirma_alvo != 2){
+                        printf(YELLOW"Opcao invalida... tente novamente\n"RESET);
+                        break;
+                    }
+                    else if(confirma_alvo == 2){
+                        printf("Sem prolbemas, vamos voltar essa etapa\n");
+                        break;
+                    }
+                }
+        }
+    }while(confirma_alvo != 1);
+
+    /*do{
         printf("Digite 1 para carregar totalmente a bateria (100%%)\n");
         printf("Digite 2 para selecionar um percentual alvo da carga da bateria\n");
         printf("Resposta: ");
@@ -214,7 +256,7 @@ int iniciarSessao(Sessao sessoes[], int total){
             }
         }
 
-    }while(confirma_alvo !=1);
+    }while(confirma_alvo !=1);*/
 
     // Potencia da bateria
     do{
