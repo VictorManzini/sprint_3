@@ -155,31 +155,40 @@ int iniciarSessao(Sessao sessoes[], int total){
     do{
         printf(BLUE"Digite a porcentagem de carga da bateria: "RESET);
         scanf("%f", &sessoes[total].carro.porcentagem_bateria);
+        while(getchar() != '\n');
+        printf("\n");
+
         if(sessoes[total].carro.porcentagem_bateria < 1 || sessoes[total].carro.porcentagem_bateria > 100){
             printf(YELLOW"Porcentagem da bateria digitada invalida...\n"RESET);
             printf("A porcentagem da carga da bateria nao pode ser menor que 1 ou maior que 100\n");
             printf("\n");
-            continue;
+            confirma_bateria = 2;
         }
-        printf(ORANGE"Carga atual da bateria:"RESET" %.1f%%\n", sessoes[total].carro.porcentagem_bateria);
-        printf(YELLOW"A porcentagem de carga da bateria esta correta?"RESET" (Digite 1 para sim | 2 para nao)\n");
-        printf("Resposta: ");
-        scanf("%d", &confirma_bateria);
-        if(sessoes[total].carro.porcentagem_bateria >= 90 && confirma_bateria == 1){
-            printf(YELLOW"O seu carro nao precisa de recarga no momento...\n");
-            printf("Carga atual da bateria:"RESET" %.1f%%\n", sessoes[total].carro.porcentagem_bateria);
+        else{
+            printf(ORANGE"Carga atual da bateria: "RESET"%.1f%%\n", sessoes[total].carro.porcentagem_bateria);
+            printf(YELLOW"A porcentagem da bateria esta correta?"RESET" (Digite 1 para sim | 2 para nao)\n");
+            printf("Resposta: ");
+            scanf("%d", &confirma_bateria);
+            while(getchar() != '\n');
             printf("\n");
-            return total;
+
+            if(sessoes[total].carro.porcentagem_bateria >= 90 && confirma_bateria == 1){
+                printf(YELLOW"O seu carro nao precisa de recarga no mometo...\n"RESET);
+                printf("Carga atual da bateria: %.1f%%\n", sessoes[total].carro.porcentagem_bateria);
+                printf("\n");
+                sleep(2);
+                return total;
+            }
+
+            if(confirma_bateria < 1 || confirma_bateria > 2){
+                printf(YELLOW"Opcao invalida... tente novamente\n"RESET);
+                printf("\n");
+            }
+            else if(confirma_bateria == 2){
+                printf(ORANGE"Sem problemas, vamos voltar essa etapa\n"RESET);
+                printf("\n");
+            }
         }
-        if(confirma_bateria < 1 || confirma_bateria > 2){
-            printf(YELLOW"Opcao invalida... tente novamente\n"RESET);
-            printf("\n");
-        }
-        else if(confirma_bateria == 2){
-            printf(ORANGE"Sem problemas, vamos voltar essa etapa\n"RESET);
-            printf("\n");
-        }
-        printf("\n");
     }while(confirma_bateria != 1);
 
     // Percentual alvo da bateria
@@ -192,6 +201,7 @@ int iniciarSessao(Sessao sessoes[], int total){
         switch(opcao_alvo){
             case 1: 
                 printf(GREEN"Carga total da bateria selecionada\n"RESET);
+                printf("\n");
                 sessoes[total].carro.percentual_alvo = 100;
                 confirma_alvo = 1;
                 break;
@@ -201,7 +211,7 @@ int iniciarSessao(Sessao sessoes[], int total){
                 scanf("%f", &sessoes[total].carro.percentual_alvo);
                 printf("\n");
                 if(sessoes[total].carro.percentual_alvo <= sessoes[total].carro.porcentagem_bateria){
-                    printf(RED"O percentual alvo nao pode ser maior ou igual a porcentagem atual da bateria\n"RESET);
+                    printf(RED"O percentual alvo nao pode ser menor ou igual a porcentagem atual da bateria\n"RESET);
                     printf("\n");
                     confirma_alvo = 0;
                     break;
@@ -213,10 +223,12 @@ int iniciarSessao(Sessao sessoes[], int total){
                     break;
                 }
                 else{
-                    printf(ORANGE"Percentual alvo desejado:"RESET" %.0f\n", sessoes[total].carro.percentual_alvo);
+                    printf(ORANGE"Percentual alvo desejado:"RESET" %.1f%%\n", sessoes[total].carro.percentual_alvo);
                     printf(YELLOW"O percentual alvo desejado esta correto?"RESET" (Digite 1 para sim | 2 para nao)\n");
+                    printf("Resposta: ");
                     scanf("%d", &confirma_alvo);
                     printf("\n");
+                    while(getchar() != '\n');
                     if(confirma_alvo < 1 || confirma_alvo > 2){
                         printf(YELLOW"Opcao invalida... tente novamente\n"RESET);
                         printf("\n");
@@ -240,7 +252,7 @@ int iniciarSessao(Sessao sessoes[], int total){
 
     // Potencia da bateria
     do{
-        printf("Deseja digitar a potencia da bateria manualmente ou deixar o sistema escolher automaticamente (padrao 38.8kWh)? \n");
+        printf(BLUE"Deseja inserir a potencia da bateria ou deixar o sistema escolher automaticamente?"RESET" (padrao 38.8kWh)\n");
         printf("(Digite 1 para manual | 2 para automatico)\n");
         printf("Resposta: ");
         scanf("%d", &opcao_bateria);
@@ -251,25 +263,36 @@ int iniciarSessao(Sessao sessoes[], int total){
         }
         else if(opcao_bateria == 2){
             sessoes[total].carro.potencia_bateria = 38.8; // 38.8 kWh
-            printf("Potencia da bateria selecionada automaticamente em 38.8kWh\n");
+            printf(ORANGE"Potencia da bateria selecionada automaticamente em 38.8kWh\n"RESET);
             printf("\n");
 
         }
         else{
             do{
-                printf("Digite a potencia da bateria em kW: ");
+                printf(BLUE"Digite a potencia da bateria em kW: "RESET);
                 scanf("%f", &sessoes[total].carro.potencia_bateria);
                 printf("\n");
-                printf("Potencia da bateria: %.2f\n", sessoes[total].carro.potencia_bateria);
-                printf("A potencia da bateria esta correta? (Digite 1 para sim | 2 para nao)\n");
+                printf(ORANGE"Potencia da bateria:"RESET" %.1fkWh\n", sessoes[total].carro.potencia_bateria);
+                printf(YELLOW"A potencia da bateria esta correta?"RESET" (Digite 1 para sim | 2 para nao)\n");
                 printf("Resposta: ");
                 scanf("%d", &confirma_potencia_bateria);
                 printf("\n");
-                if(confirma_potencia_bateria < 1 || confirma_potencia_bateria > 2){
+
+                if(sessoes[total].carro.potencia_bateria > 246.8 && confirma_potencia_bateria == 1){
+                    printf(RED"\nATENCAO!\n"RESET);
+                    printf("\nO EV com a maior capacidade de bateria eh o GMC Hummer EV Pickup com 246.8kWh\n");
+                    printf("Nenhum carro a venda nos dias atuais conta com uma bateria mais potente\n");
+                    printf("Por favor, insira um valor real ou um valor aproximado da potencia da bateria do seu veiculo\n");
+                    printf("\n");
+                    confirma_potencia_bateria = 0;
+                }
+                else if(confirma_potencia_bateria < 1 || confirma_potencia_bateria > 2){
                     printf(YELLOW"Opcao invalida... tente novamente\n"RESET);
+                    printf("\n");
                 }
                 else if(confirma_potencia_bateria == 2){
-                    printf("Sem problemas, vamos voltar essa etapa\n");
+                    printf(ORANGE"Sem problemas, vamos voltar essa etapa\n"RESET);
+                    printf("\n");
                 }
             }while(confirma_potencia_bateria != 1);
             confirma_potencia_bateria = 1;
@@ -279,7 +302,9 @@ int iniciarSessao(Sessao sessoes[], int total){
  
     // Pega qual o tipo de recarga que o usuário deseja
     do{
-        printf("Qual o tipo de carga que deseja: 1 Carga Rapida | 2 Carga Lenta\n");
+        printf(BLUE"Qual o tipo de carga que deseja:\n"); 
+        printf(BLUE"1 Carga Rapida\n"RESET); 
+        printf(RED"2 Carga Lenta\n"RESET);
         printf("Resposta: ");
         scanf("%d", &sessoes[total].tipo_carga);
         printf("\n");
@@ -287,11 +312,12 @@ int iniciarSessao(Sessao sessoes[], int total){
             printf(YELLOW"Tipo de carga selecionada incorreta... tente novamente\n"RESET);
         }
         else if(sessoes[total].tipo_carga == 2){
-            printf("Carga Lenta selecionada\n");
+            printf(GREEN"Carga Lenta selecionada\n"RESET);
         }
         else{
-            printf("Carga Rapida selecionada\n");
+            printf(GREEN"Carga Rapida selecionada\n"RESET);
         }
+        printf("\n");
     }while(sessoes[total].tipo_carga != 1 && sessoes[total].tipo_carga != 2);
 
     // Pega o horario de inicio da sessao
@@ -303,6 +329,15 @@ int iniciarSessao(Sessao sessoes[], int total){
     sessoes[total].energia = 0;
     sessoes[total].custo = 0;
     sessoes[total].status = 0;
+    printf(ORANGE"Nome do(a) usuario(a) da sessao ID: "RESET"%d: %s\n", sessoes[total].id, sessoes[total].nome);
+    printf(ORANGE"Modelo do veiculo: "RESET"%s\n", sessoes[total].carro.modelo);
+    printf(ORANGE"Placa do veiculo: "RESET"%s\n", sessoes[total].carro.placa);
+    printf(ORANGE"Potencia selecionada: "RESET"%.1f"ORANGE"kWh\n"RESET, sessoes[total].carro.potencia_bateria);
+    printf(ORANGE"Carga atual da bateria: "RESET"%.1f%%\n", sessoes[total].carro.porcentagem_bateria);
+    printf(ORANGE"Percentual alvo de carga: "RESET"%.1f%%\n", sessoes[total].carro.percentual_alvo);
+    if(sessoes[total].tipo_carga == 1){printf(ORANGE"Tipo da carga: "RESET"Rapida\n");}
+    else{printf(ORANGE"Tipo da carga: "RESET"Lenta\n");}
+    printf("\n");
     return total + 1;
 }
 
@@ -537,13 +572,14 @@ int main(){
         printf("\n"); 
         switch(opcao){
             case 1: 
+            system("clear");
             printf(BLUE"Opcao 1, iniciar sessao, selecionada\n"RESET);
             total_sessoes = iniciarSessao(sessoes, total_sessoes);
             redistribuirPotencia(sessoes, total_sessoes);
-            system("clear");
             break;
 
             case 2: 
+            system("clear");
             printf("Opcao 2, listar sessoes, selecionada\n");
             listarSessoes(sessoes, total_sessoes);
             break;
